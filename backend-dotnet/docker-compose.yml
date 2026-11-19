@@ -1,0 +1,27 @@
+# Runs the API against PostgreSQL. Usage: JWT_SECRET=... ADMIN_PASSWORD=... docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sparkenglish
+      POSTGRES_USER: spark
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-spark-dev-pw}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spark -d sparkenglish"]
+      interval: 5s
+      retries: 10
+  api:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8080:8080"]
+    environment:
+      Database__Provider: Postgres
+      ConnectionStrings__Default: Host=db;Database=sparkenglish;Username=spark;Password=${DB_PASSWORD:-spark-dev-pw}
+      Jwt__Secret: ${JWT_SECRET:?set JWT_SECRET (32+ chars)}
+      Admin__Email: ${ADMIN_EMAIL:-admin@sparkenglishkids.com}
+      Admin__Password: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      Cors__Origins: ${CORS_ORIGINS:-http://localhost:5173}
+volumes:
+  pgdata:

@@ -1,0 +1,17 @@
+name: backend
+on:
+  push:
+    paths: ["backend-dotnet/**", ".github/workflows/backend.yml"]
+  pull_request:
+    paths: ["backend-dotnet/**"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend-dotnet } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release
