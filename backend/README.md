@@ -36,6 +36,9 @@ Dev admin: `admin@sparkenglishkids.com` / `ChangeMe123!` (Development environmen
 | `Database__Provider` | `Sqlite` (default) or `Postgres` |
 | `ConnectionStrings__Default` | Connection string |
 | `Cors__Origins` | Comma-separated allowed browser origins |
+| `Notifications__To` | Email address that receives an alert for every new trial request / message |
+| `Notifications__Smtp__Host` / `__Port` / `__User` / `__Password` | SMTP server used to send those alerts (port 587 STARTTLS, or 465 SSL) |
+| `Notifications__AdminUrl` | Optional dashboard link included in each alert |
 | `RateLimiting__FormsPerMinute` / `AuthPerMinute` | Per-IP limits on public forms / auth |
 
 ## Endpoints
@@ -58,6 +61,22 @@ Dev admin: `admin@sparkenglishkids.com` / `ChangeMe123!` (Development environmen
 | GET | `/health` | public |
 
 Errors are RFC 7807 `ProblemDetails`; validation failures return `errors: { field: [messages] }`.
+
+## Email alerts (get notified of every request)
+
+Each new trial request or contact message is saved **and** emailed to `Notifications:To`. Replying to the email answers the parent directly (Reply-To is set to their address). Sending runs in a background queue, so a mail outage never breaks the visitor's form; failures are logged.
+
+With Gmail: enable 2-Step Verification, create an **App Password** (Google Account → Security → App passwords), then:
+
+```bash
+export Notifications__To=you@gmail.com
+export Notifications__Smtp__Host=smtp.gmail.com
+export Notifications__Smtp__User=you@gmail.com
+export Notifications__Smtp__Password='xxxx xxxx xxxx xxxx'   # the app password, not your login password
+dotnet run
+```
+
+If these are not set, nothing is sent and the would-be email is written to the API log instead.
 
 ## Tests
 

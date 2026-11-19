@@ -55,3 +55,10 @@ public interface IAdminService
 {
     Task<AdminStatsDto> GetStatsAsync(CancellationToken ct);
 }
+
+/// <summary>Tells the school owner about new bookings/messages. Must never throw or block the request.</summary>
+public interface INotificationService
+{
+    void TrialRequested(TrialRequestDto trial);
+    void MessageReceived(ContactMessageDto message);
+}

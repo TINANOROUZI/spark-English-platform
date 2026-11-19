@@ -7,14 +7,16 @@ using SparkEnglish.Infrastructure.Persistence;
 
 namespace SparkEnglish.Infrastructure.Services;
 
-public class ContactMessageService(AppDbContext db) : IContactMessageService
+public class ContactMessageService(AppDbContext db, INotificationService notifier) : IContactMessageService
 {
     public async Task<ContactMessageDto> SubmitAsync(ContactMessageRequest r, int? userId, CancellationToken ct)
     {
         var m = new ContactMessage { Name = r.Name.Trim(), Email = r.Email.Trim().ToLowerInvariant(), Message = r.Message.Trim(), UserId = userId };
         db.ContactMessages.Add(m);
         await db.SaveChangesAsync(ct);
-        return ToDto(m);
+        var dto = ToDto(m);
+        notifier.MessageReceived(dto);
+        return dto;
     }
 
     public async Task<PagedResult<ContactMessageDto>> ListAsync(bool? unreadOnly, int page, int pageSize, CancellationToken ct)

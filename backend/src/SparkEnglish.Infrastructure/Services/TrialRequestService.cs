@@ -8,7 +8,7 @@ using SparkEnglish.Infrastructure.Persistence;
 
 namespace SparkEnglish.Infrastructure.Services;
 
-public class TrialRequestService(AppDbContext db) : ITrialRequestService
+public class TrialRequestService(AppDbContext db, INotificationService notifier) : ITrialRequestService
 {
     public async Task<TrialRequestDto> SubmitAsync(TrialRequestRequest r, int? userId, CancellationToken ct)
     {
@@ -27,7 +27,9 @@ public class TrialRequestService(AppDbContext db) : ITrialRequestService
         db.TrialRequests.Add(t);
         await db.SaveChangesAsync(ct);
         await db.Entry(t).Reference(x => x.Course).LoadAsync(ct);
-        return ToDto(t);
+        var dto = ToDto(t);
+        notifier.TrialRequested(dto);
+        return dto;
     }
 
     public async Task<IReadOnlyList<TrialRequestDto>> ListMineAsync(int userId, CancellationToken ct) =>

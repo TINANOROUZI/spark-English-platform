@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SparkEnglish.Application.Interfaces;
 using SparkEnglish.Infrastructure.Auth;
+using SparkEnglish.Infrastructure.Notifications;
 using SparkEnglish.Infrastructure.Persistence;
 using SparkEnglish.Infrastructure.Services;
 
@@ -24,6 +25,10 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(config.GetSection(JwtOptions.Section));
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
+        services.Configure<NotificationOptions>(config.GetSection(NotificationOptions.Section));
+        services.AddSingleton<EmailQueue>();
+        services.AddSingleton<INotificationService, EmailNotificationService>();
+        services.AddHostedService<SmtpEmailSender>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ITrialRequestService, TrialRequestService>();

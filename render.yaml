@@ -15,3 +15,9 @@ services:
       - { key: Admin__Email, value: admin@sparkenglishkids.com }
       - { key: Admin__Password, sync: false }
       - { key: Cors__Origins, value: "https://spark-english-kids.netlify.app" }
+      # Email alerts for new requests/messages (Gmail: use an App Password, see backend/README.md)
+      - { key: Notifications__To, sync: false }
+      - { key: Notifications__Smtp__Host, value: smtp.gmail.com }
+      - { key: Notifications__Smtp__User, sync: false }
+      - { key: Notifications__Smtp__Password, sync: false }
+      - { key: Notifications__AdminUrl, value: "https://spark-english-kids.netlify.app/admin" }
