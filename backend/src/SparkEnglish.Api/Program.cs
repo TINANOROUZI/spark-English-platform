@@ -14,6 +14,8 @@ using SparkEnglish.Infrastructure.Auth;
 using SparkEnglish.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+// Untracked, per-machine secrets (SMTP password, Telegram token). Never committed; see backend/README.md.
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
 var config = builder.Configuration;
 
 var jwt = config.GetSection(JwtOptions.Section).Get<JwtOptions>() ?? new JwtOptions();

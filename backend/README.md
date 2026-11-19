@@ -76,7 +76,27 @@ export Notifications__Smtp__Password='xxxx xxxx xxxx xxxx'   # the app password,
 dotnet run
 ```
 
-If these are not set, nothing is sent and the would-be email is written to the API log instead.
+If no channel is configured, nothing is sent and the would-be alert is written to the API log instead.
+
+### Telegram alerts
+
+1. In Telegram, message **@BotFather** → `/newbot` → copy the **bot token**.
+2. Open your new bot and press **Start** (a bot can't message you until you do).
+3. Find your chat id: open `https://api.telegram.org/bot<TOKEN>/getUpdates` in a browser and read `message.chat.id`.
+4. Set `Notifications__Telegram__BotToken` and `Notifications__Telegram__ChatId`.
+
+Email and Telegram are independent channels: if one fails, the other still sends.
+
+### Keeping secrets out of git
+
+Per-machine secrets go in `src/SparkEnglish.Api/appsettings.Local.json` (git-ignored and excluded from the Docker build), e.g.:
+
+```json
+{ "Notifications": { "To": "you@gmail.com",
+    "Smtp": { "Host": "smtp.gmail.com", "Port": 587, "User": "you@gmail.com", "Password": "app-password" },
+    "Telegram": { "BotToken": "123456:ABC...", "ChatId": "123456789" } } }
+```
+In production use environment variables (`Notifications__Telegram__BotToken`, ...) instead.
 
 ## Tests
 

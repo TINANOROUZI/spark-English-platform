@@ -26,9 +26,11 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
         services.Configure<NotificationOptions>(config.GetSection(NotificationOptions.Section));
-        services.AddSingleton<EmailQueue>();
-        services.AddSingleton<INotificationService, EmailNotificationService>();
-        services.AddHostedService<SmtpEmailSender>();
+        services.AddSingleton<NotificationQueue>();
+        services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<INotificationChannel, EmailChannel>();
+        services.AddSingleton<INotificationChannel>(sp => new TelegramChannel(sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<NotificationOptions>>()));
+        services.AddHostedService<NotificationDispatcher>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ITrialRequestService, TrialRequestService>();

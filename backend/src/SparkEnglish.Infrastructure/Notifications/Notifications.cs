@@ -1,11 +1,8 @@
 using System.Text;
 using System.Threading.Channels;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MimeKit;
 using SparkEnglish.Application.Dtos;
 using SparkEnglish.Application.Interfaces;
 
@@ -19,37 +16,54 @@ public class SmtpOptions
     public string Password { get; set; } = "";
 }
 
+public class TelegramOptions
+{
+    /// <summary>Token from @BotFather. Treat as a secret.</summary>
+    public string BotToken { get; set; } = "";
+    /// <summary>Your chat id (a number) or @channelname.</summary>
+    public string ChatId { get; set; } = "";
+}
+
 public class NotificationOptions
 {
     public const string Section = "Notifications";
-    /// <summary>Address that receives the alerts (the school owner).</summary>
+    /// <summary>Email address that receives alerts (the school owner).</summary>
     public string To { get; set; } = "";
     /// <summary>Sender address; defaults to the SMTP user.</summary>
     public string From { get; set; } = "";
-    /// <summary>Link to the admin dashboard included in each email.</summary>
+    /// <summary>Link to the admin dashboard included in each alert.</summary>
     public string AdminUrl { get; set; } = "";
     public SmtpOptions Smtp { get; set; } = new();
-    public bool IsConfigured => !string.IsNullOrWhiteSpace(To) && !string.IsNullOrWhiteSpace(Smtp.Host);
+    public TelegramOptions Telegram { get; set; } = new();
 }
 
-public record EmailMessage(string Subject, string Body, string? ReplyTo);
+/// <summary>A provider-neutral alert. Channels render it however they like.</summary>
+public record Notice(string Subject, string Body, string? ReplyTo);
 
-public class EmailQueue
+public interface INotificationChannel
 {
-    private readonly Channel<EmailMessage> _channel = Channel.CreateBounded<EmailMessage>(
-        new BoundedChannelOptions(200) { FullMode = BoundedChannelFullMode.DropOldest });
-    public void Enqueue(EmailMessage m) => _channel.Writer.TryWrite(m);
-    public IAsyncEnumerable<EmailMessage> ReadAllAsync(CancellationToken ct) => _channel.Reader.ReadAllAsync(ct);
+    string Name { get; }
+    bool IsConfigured { get; }
+    Task SendAsync(Notice notice, CancellationToken ct);
 }
 
-public class EmailNotificationService(EmailQueue queue, IOptions<NotificationOptions> options) : INotificationService
+public class NotificationQueue
+{
+    private readonly Channel<Notice> _channel = Channel.CreateBounded<Notice>(
+        new BoundedChannelOptions(200) { FullMode = BoundedChannelFullMode.DropOldest });
+    public void Enqueue(Notice n) => _channel.Writer.TryWrite(n);
+    public IAsyncEnumerable<Notice> ReadAllAsync(CancellationToken ct) => _channel.Reader.ReadAllAsync(ct);
+}
+
+/// <summary>Builds the alert text and queues it. Returns immediately so the HTTP request is never slowed.</summary>
+public class NotificationService(NotificationQueue queue, IOptions<NotificationOptions> options) : INotificationService
 {
     private readonly NotificationOptions _o = options.Value;
 
     public void TrialRequested(TrialRequestDto t)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("A new free-trial request just came in.\n");
+        sb.AppendLine("New free-trial request\n");
         sb.AppendLine($"Parent:    {t.ParentName}");
         sb.AppendLine($"Email:     {t.Email}");
         sb.AppendLine($"Child age: {t.ChildAge?.ToString() ?? "-"}");
@@ -57,22 +71,21 @@ public class EmailNotificationService(EmailQueue queue, IOptions<NotificationOpt
         sb.AppendLine($"Course:    {t.CourseTitle ?? "not chosen"}");
         if (!string.IsNullOrWhiteSpace(t.Notes)) sb.AppendLine($"\nNotes:\n{t.Notes}");
         Footer(sb);
-        queue.Enqueue(new EmailMessage($"New trial request: {Clean(t.ParentName)}", sb.ToString(), t.Email));
+        queue.Enqueue(new Notice($"New trial request: {Clean(t.ParentName)}", sb.ToString(), t.Email));
     }
 
     public void MessageReceived(ContactMessageDto m)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"New message from {m.Name} <{m.Email}>:\n");
+        sb.AppendLine($"New message from {m.Name} <{m.Email}>\n");
         sb.AppendLine(m.Message);
         Footer(sb);
-        queue.Enqueue(new EmailMessage($"New message from {Clean(m.Name)}", sb.ToString(), m.Email));
+        queue.Enqueue(new Notice($"New message from {Clean(m.Name)}", sb.ToString(), m.Email));
     }
 
     private void Footer(StringBuilder sb)
     {
         sb.AppendLine("\n--");
-        sb.AppendLine("Hit Reply to answer the sender directly.");
         if (!string.IsNullOrWhiteSpace(_o.AdminUrl)) sb.AppendLine($"Dashboard: {_o.AdminUrl}");
     }
 
@@ -80,42 +93,28 @@ public class EmailNotificationService(EmailQueue queue, IOptions<NotificationOpt
     private static string Clean(string s) => new string(s.Where(c => !char.IsControl(c)).ToArray()).Trim();
 }
 
-/// <summary>Sends queued emails in the background. Failures are logged and never reach the visitor.</summary>
-public class SmtpEmailSender(EmailQueue queue, IOptions<NotificationOptions> options, ILogger<SmtpEmailSender> logger) : BackgroundService
+/// <summary>Fans each queued notice out to every configured channel. A failing channel never affects the others or the visitor.</summary>
+public class NotificationDispatcher(NotificationQueue queue, IEnumerable<INotificationChannel> channels, ILogger<NotificationDispatcher> logger) : BackgroundService
 {
-    private readonly NotificationOptions _o = options.Value;
-
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        if (!_o.IsConfigured)
-            logger.LogWarning("Email notifications are OFF (set Notifications:To and Notifications:Smtp:*). New requests are still saved; emails will be logged only.");
+        var active = channels.Where(c => c.IsConfigured).ToList();
+        foreach (var c in channels.Where(c => !c.IsConfigured)) logger.LogWarning("Notification channel '{Channel}' is OFF (not configured).", c.Name);
+        if (active.Count > 0) logger.LogInformation("Notification channels active: {Channels}", string.Join(", ", active.Select(c => c.Name)));
 
-        await foreach (var msg in queue.ReadAllAsync(ct))
+        await foreach (var notice in queue.ReadAllAsync(ct))
         {
-            if (!_o.IsConfigured)
+            if (active.Count == 0)
             {
-                logger.LogInformation("[email not sent - not configured] {Subject}\n{Body}", msg.Subject, msg.Body);
+                logger.LogInformation("[no notification channel configured] {Subject}\n{Body}", notice.Subject, notice.Body);
                 continue;
             }
-            try { await SendAsync(msg, ct); logger.LogInformation("Notification email sent: {Subject}", msg.Subject); }
-            catch (Exception ex) when (ex is not OperationCanceledException) { logger.LogError(ex, "Failed to send notification email: {Subject}", msg.Subject); }
+            await Task.WhenAll(active.Select(async c =>
+            {
+                try { await c.SendAsync(notice, ct); logger.LogInformation("Notification sent via {Channel}: {Subject}", c.Name, notice.Subject); }
+                catch (OperationCanceledException) { }
+                catch (Exception ex) { logger.LogError("Notification via {Channel} failed: {Type}: {Message}", c.Name, ex.GetType().Name, ex.Message); }
+            }));
         }
-    }
-
-    private async Task SendAsync(EmailMessage m, CancellationToken ct)
-    {
-        var from = string.IsNullOrWhiteSpace(_o.From) ? _o.Smtp.User : _o.From;
-        var mime = new MimeMessage();
-        mime.From.Add(MailboxAddress.Parse(from));
-        mime.To.Add(MailboxAddress.Parse(_o.To));
-        if (!string.IsNullOrWhiteSpace(m.ReplyTo) && MailboxAddress.TryParse(m.ReplyTo, out var reply)) mime.ReplyTo.Add(reply);
-        mime.Subject = m.Subject;
-        mime.Body = new TextPart("plain") { Text = m.Body };
-
-        using var client = new SmtpClient();
-        await client.ConnectAsync(_o.Smtp.Host, _o.Smtp.Port, _o.Smtp.Port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls, ct);
-        if (!string.IsNullOrWhiteSpace(_o.Smtp.User)) await client.AuthenticateAsync(_o.Smtp.User, _o.Smtp.Password, ct);
-        await client.SendAsync(mime, ct);
-        await client.DisconnectAsync(true, ct);
     }
 }

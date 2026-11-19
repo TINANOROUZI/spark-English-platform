@@ -21,3 +21,5 @@ services:
       - { key: Notifications__Smtp__User, sync: false }
       - { key: Notifications__Smtp__Password, sync: false }
       - { key: Notifications__AdminUrl, value: "https://spark-english-kids.netlify.app/admin" }
+      - { key: Notifications__Telegram__BotToken, sync: false }
+      - { key: Notifications__Telegram__ChatId, sync: false }
