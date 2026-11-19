@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Field from "../components/Field";
+import Select from "../components/Select";
 import Reveal from "../components/Reveal";
 import { ApiError } from "../api/client";
 import { useSubmitTrial } from "../api/hooks";
@@ -33,7 +34,7 @@ export default function Contact() {
   const submit = useSubmitTrial(auth?.token);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const { register, handleSubmit, reset, setValue, setError, watch, formState: { errors, isSubmitting } } =
+  const { register, control, handleSubmit, reset, setValue, setError, watch, formState: { errors, isSubmitting } } =
     useForm<Values>({ resolver: zodResolver(schema), defaultValues: DEFAULTS });
 
   const courseId = watch("courseId");
@@ -85,28 +86,24 @@ export default function Contact() {
             <Field label={t("form_age")} error={tr(errors.childAge?.message)}>
               <input type="number" inputMode="numeric" min={3} max={18} placeholder="10" {...register("childAge")} />
             </Field>
-            <Field label={t("form_time")}>
-              <select {...register("preferredTime")}>
-                <option value="afternoon">{t("time_afternoon")}</option>
-                <option value="evening">{t("time_evening")}</option>
-                <option value="weekend">{t("time_weekend")}</option>
-              </select>
-            </Field>
+            <Controller control={control} name="preferredTime" render={({ field }) => (
+              <Select label={t("form_time")} value={field.value} onChange={field.onChange} options={[
+                { value: "afternoon", label: t("time_afternoon") },
+                { value: "evening", label: t("time_evening") },
+                { value: "weekend", label: t("time_weekend") },
+              ]} />
+            )} />
           </div>
           {!isFallback && courses.length > 0 && (
             <div className="row">
-              <Field label={t("form_course")}>
-                <select {...register("courseId", { onChange: () => setValue("scheduleId", "") })}>
-                  <option value="">{t("form_course_any")}</option>
-                  {courses.map((c) => <option key={c.id} value={c.id}>{courseTitle(c, lang)}</option>)}
-                </select>
-              </Field>
-              <Field label={t("form_schedule")}>
-                <select {...register("scheduleId")} disabled={slots.length === 0}>
-                  <option value="">{t("form_schedule_any")}</option>
-                  {slots.map((s) => <option key={s.id} value={s.id}>{slotLabel(s, lang)}</option>)}
-                </select>
-              </Field>
+              <Controller control={control} name="courseId" render={({ field }) => (
+                <Select label={t("form_course")} value={field.value} onChange={(v) => { field.onChange(v); setValue("scheduleId", ""); }}
+                  options={[{ value: "", label: t("form_course_any") }, ...courses.map((c) => ({ value: String(c.id), label: courseTitle(c, lang) }))]} />
+              )} />
+              <Controller control={control} name="scheduleId" render={({ field }) => (
+                <Select label={t("form_schedule")} value={field.value} onChange={field.onChange} disabled={slots.length === 0}
+                  options={[{ value: "", label: t("form_schedule_any") }, ...slots.map((sl) => ({ value: String(sl.id), label: slotLabel(sl, lang) }))]} />
+              )} />
             </div>
           )}
           <Field className="full" label={t("form_msg")} error={tr(errors.notes?.message)}>
