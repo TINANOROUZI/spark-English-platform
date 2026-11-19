@@ -1,0 +1,17 @@
+import { useI18n } from "../i18n/I18nContext";
+
+export default function Footer() {
+  const { t } = useI18n();
+  return (
+    <footer className="footer">
+      <div className="container foot">
+        <p>© {new Date().getFullYear()} Spark English Kids</p>
+        <nav className="foot-links" aria-label="Footer">
+          <a href="#courses">{t("nav_courses")}</a>
+          <a href="#pricing">{t("nav_pricing")}</a>
+          <a href="#faq">{t("nav_faq")}</a>
+        </nav>
+      </div>
+    </footer>
+  );
+}

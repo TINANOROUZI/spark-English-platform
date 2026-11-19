@@ -1,0 +1,61 @@
+// All user-facing copy. `it` must define exactly the same keys as `en` (enforced by the type below).
+const en = {
+nav_courses:"Courses", nav_activities:"Activities", nav_ages:"Ages", nav_teachers:"Teachers", nav_pricing:"Pricing", nav_faq:"FAQ", nav_trial:"Free Trial",
+    hero_title:"Learn English the fun way!", hero_sub:"Games, songs, and projects with native-level tutors. Kids have fun, parents see progress.",
+    hero_cta:"Start your free trial", hero_secondary:"See courses", hero_badge1:"Mini-groups (3–5)", hero_badge2:"CEFR aligned", hero_badge3:"Ages 5–17", hero_caption:"Fun, safe, screen-smart lessons",
+    courses_title:"Course Formats", courses_sub:"Pick what fits your child best.", c1_title:"1:1 Online Lessons", c1_text:"25 or 50 minutes focused on speaking, phonics, and confidence.", c1_p1:"Personalized plan", c1_p2:"Native-level tutors", c1_p3:"Homework support",
+    c2_title:"Mini-Group (max 4)", c2_text:"Team games and projects for natural conversation.", c2_p1:"Communication first", c2_p2:"Topics kids love", c2_p3:"Progress reports",
+    c3_title:"Summer English Camp", c3_text:"One week full-immersion with outdoor fun & projects.", c3_p1:"All-day English", c3_p2:"Games & excursions", c3_p3:"New friends!", cta_try:"Try it free", cta_info:"Get info",
+    act_title:"What we do in lessons", act1_t:"Songs & chants", act1_d:"Catchy tunes to lock in new sounds.", act2_t:"Games", act2_d:"Fast mini-games that make speaking easy.", act3_t:"Role-play", act3_d:"Real-life situations and dialogs.", act4_t:"Projects", act4_d:"Posters, videos, and mini-presentations.",
+    ages_title:"Age Tracks", a1_title:"5–6: Starters", a1_text:"Songs, TPR, phonics, routines.", a2_title:"7–10: Explorers", a2_text:"Projects, stories, everyday speaking.", a3_title:"11–14: Makers", a3_text:"Debates, video tasks, real topics.", a4_title:"15–17: Achievers", a4_text:"Exams, presentations, future goals.",
+    teach_title:"Meet our teachers", teach_note:"All teachers are background-checked and trained for online safety.",
+    pricing_title:"Simple pricing", pricing_sub:"Clear plans. No surprises.",
+    faq_title:"FAQ", f1_q:"How does the free trial work?", f1_a:"Short placement + trial lesson. No commitment.", f2_q:"Do you give homework?", f2_a:"Small, practical tasks to build habits.", f3_q:"What do I need?", f3_a:"A device with camera/mic and good internet.",
+    contact_title:"Book a free trial", contact_sub:"Tell us your child's age and preferred time.", form_name:"Parent name", form_email:"Email", form_age:"Child age", form_time:"Preferred time", form_msg:"Notes", form_send:"Send request",
+    time_afternoon:"Afternoon", time_evening:"Evening", time_weekend:"Weekend",
+    msg_title:"Send a message", msg_sub:"I'll reply by email.", msg_name:"Your name", msg_email:"Your email", msg_message:"Your message", msg_send:"Send",
+    form_ok:"Thanks! We'll contact you soon.", msg_ok_back:"Message sent. Thank you!",
+    login:"Log in", logout:"Logout", signup:"Sign up", hi:"Hi,", admin_link:"Admin", auth_email:"Email", auth_password:"Password", auth_name:"Your name", auth_create:"Create account", auth_pw_hint:"8+ characters, letters and a number", auth_close:"Close", menu:"Menu",
+    err_required:"This field is required", err_email:"Enter a valid email address", err_age:"Age must be between 3 and 18", err_pw_min:"At least 8 characters", err_pw_mix:"Use letters and at least one number", err_network:"Can't reach the server. Please try again in a moment.", err_rate:"Too many attempts. Please wait a minute.", err_generic:"Something went wrong. Please try again.", err_credentials:"Incorrect email or password.", err_exists:"An account with this email already exists.",
+    form_course:"Course", form_course_any:"Not sure yet", form_schedule:"Class slot", form_schedule_any:"Any time works", form_sending:"Sending…", msg_sending:"Sending…",
+    courses_error:"We couldn't load the live course list, showing our standard formats.", courses_retry:"Retry", min_short:"min", up_to:"up to", kids:"kids", ages_label:"Ages",
+    price_ask:"Ask info", price_choose:"Choose", price_popular:"Popular", price_per:"/",
+    p_oneToOne_1:"1:1 session", p_oneToOne_2:"Placement + plan", p_oneToOne_3:"Homework tips",
+    p_miniGroup_1:"Max 4 learners", p_miniGroup_2:"Projects + games", p_miniGroup_3:"Monthly progress",
+    p_camp_1:"1 week immersion", p_camp_2:"Activities & trips", p_camp_3:"Ask for details",
+    teach1_exp:"4 years experience • Starters & Explorers", teach1_back:"4 years online. Phonics, songs & crafts. Patient and playful.", teach2_exp:"6 years experience • Makers & Achievers", teach2_back:"6 years online. Project-based learning and A2–B2 exam prep.",
+    hero_bubble:"Hello!", skip:"Skip to content", brand_alt:"Spark English Kids home",
+} as const;
+
+export type CopyKey = keyof typeof en;
+export type Lang = "en" | "it";
+
+const it: Record<CopyKey, string> = {
+nav_courses:"Corsi", nav_activities:"Attività", nav_ages:"Età", nav_teachers:"Insegnanti", nav_pricing:"Prezzi", nav_faq:"FAQ", nav_trial:"Prova gratuita",
+    hero_title:"Impara l'inglese divertendoti!", hero_sub:"Giochi, canzoni e progetti con tutor di livello madrelingua. I bambini si divertono, i genitori vedono i progressi.",
+    hero_cta:"Prenota una prova gratuita", hero_secondary:"Vedi i corsi", hero_badge1:"Mini-gruppi (3–5)", hero_badge2:"Allineato CEFR", hero_badge3:"Età 5–17", hero_caption:"Lezioni divertenti, sicure e smart",
+    courses_title:"Formati dei corsi", courses_sub:"Scegli ciò che va meglio per tuo/a figlio/a.", c1_title:"Lezioni 1:1 Online", c1_text:"25 o 50 minuti su speaking, fonetica e sicurezza.", c1_p1:"Piano personalizzato", c1_p2:"Tutor livello madrelingua", c1_p3:"Supporto compiti",
+    c2_title:"Mini-gruppo (max 4)", c2_text:"Giochi e progetti per parlare in modo naturale.", c2_p1:"Comunicazione prima", c2_p2:"Argomenti che piacciono", c2_p3:"Report progressi",
+    c3_title:"Summer English Camp", c3_text:"Una settimana full-immersion con attività all'aperto e progetti.", c3_p1:"Inglese tutto il giorno", c3_p2:"Giochi & uscite", c3_p3:"Nuovi amici!", cta_try:"Provalo gratis", cta_info:"Richiedi info",
+    act_title:"Cosa facciamo in lezione", act1_t:"Canzoni & ritornelli", act1_d:"Melodie che fissano i nuovi suoni.", act2_t:"Giochi", act2_d:"Mini-giochi veloci per parlare senza paura.", act3_t:"Role-play", act3_d:"Dialoghi e situazioni reali.", act4_t:"Progetti", act4_d:"Poster, video e mini-presentazioni.",
+    ages_title:"Percorsi per età", a1_title:"5–6: Starters", a1_text:"Canzoni, TPR, fonetica, routine.", a2_title:"7–10: Explorers", a2_text:"Progetti, storie, speaking quotidiano.", a3_title:"11–14: Makers", a3_text:"Dibattiti, video task, temi reali.", a4_title:"15–17: Achievers", a4_text:"Esami, presentazioni, obiettivi futuri.",
+    teach_title:"I nostri insegnanti", teach_note:"Tutti gli insegnanti sono verificati e formati per la sicurezza online.",
+    pricing_title:"Prezzi semplici", pricing_sub:"Piani chiari. Nessuna sorpresa.",
+    faq_title:"FAQ", f1_q:"Come funziona la prova?", f1_a:"Breve placement + lezione di prova. Nessun impegno.", f2_q:"Date compiti?", f2_a:"Piccoli task pratici per creare abitudini.", f3_q:"Cosa serve?", f3_a:"Un dispositivo con camera/microfono e una buona connessione.",
+    contact_title:"Prenota una prova gratuita", contact_sub:"Indica età e orario preferito.", form_name:"Nome genitore", form_email:"Email", form_age:"Età del bambino", form_time:"Orario preferito", form_msg:"Note", form_send:"Invia richiesta",
+    time_afternoon:"Pomeriggio", time_evening:"Sera", time_weekend:"Weekend",
+    msg_title:"Scrivimi un messaggio", msg_sub:"Ti risponderò via email.", msg_name:"Il tuo nome", msg_email:"La tua email", msg_message:"Il tuo messaggio", msg_send:"Invia",
+    form_ok:"Grazie! Ti contatteremo presto.", msg_ok_back:"Messaggio inviato. Grazie!",
+    login:"Accedi", logout:"Esci", signup:"Registrati", hi:"Ciao,", admin_link:"Admin", auth_email:"Email", auth_password:"Password", auth_name:"Il tuo nome", auth_create:"Crea account", auth_pw_hint:"Almeno 8 caratteri, lettere e un numero", auth_close:"Chiudi", menu:"Menu",
+    err_required:"Campo obbligatorio", err_email:"Inserisci un'email valida", err_age:"L'età deve essere tra 3 e 18", err_pw_min:"Almeno 8 caratteri", err_pw_mix:"Usa lettere e almeno un numero", err_network:"Impossibile raggiungere il server. Riprova tra poco.", err_rate:"Troppi tentativi. Attendi un minuto.", err_generic:"Qualcosa è andato storto. Riprova.", err_credentials:"Email o password non corretti.", err_exists:"Esiste già un account con questa email.",
+    form_course:"Corso", form_course_any:"Non so ancora", form_schedule:"Fascia oraria", form_schedule_any:"Va bene qualsiasi orario", form_sending:"Invio…", msg_sending:"Invio…",
+    courses_error:"Non siamo riusciti a caricare i corsi in tempo reale, mostriamo i formati standard.", courses_retry:"Riprova", min_short:"min", up_to:"fino a", kids:"bambini", ages_label:"Età",
+    price_ask:"Richiedi info", price_choose:"Scegli", price_popular:"Popolare", price_per:"/",
+    p_oneToOne_1:"Sessione 1:1", p_oneToOne_2:"Test di livello + piano", p_oneToOne_3:"Consigli sui compiti",
+    p_miniGroup_1:"Max 4 studenti", p_miniGroup_2:"Progetti + giochi", p_miniGroup_3:"Progressi mensili",
+    p_camp_1:"1 settimana di immersione", p_camp_2:"Attività e uscite", p_camp_3:"Chiedi i dettagli",
+    teach1_exp:"4 anni di esperienza • Starters & Explorers", teach1_back:"4 anni online. Fonetica, canzoni e lavoretti. Paziente e giocosa.", teach2_exp:"6 anni di esperienza • Makers & Achievers", teach2_back:"6 anni online. Apprendimento per progetti e preparazione esami A2–B2.",
+    hero_bubble:"Ciao!", skip:"Vai al contenuto", brand_alt:"Spark English Kids, home",
+};
+
+export const COPY: Record<Lang, Record<CopyKey, string>> = { en, it };

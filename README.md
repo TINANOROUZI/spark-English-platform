@@ -1,7 +1,9 @@
 # Spark English Kids
 
-- [`sparkling english/frontend`](sparkling%20english/frontend) — React + Vite site (marketing pages, login/register, admin dashboard)
-- [`sparkling english/backend`](sparkling%20english/backend) — Spring Boot + PostgreSQL REST API (auth, trial requests, contact messages)
+Full-stack site for an online English school for kids (EN / IT).
 
-See each folder's README for setup and run instructions.
-# spark-English-
+- [`frontend/`](frontend) — React + TypeScript + Vite
+- [`backend-dotnet/`](backend-dotnet) — ASP.NET Core 8 Web API (EF Core, JWT, Swagger, xUnit)
+- `sparkling english/backend` — the original Spring Boot API (legacy, to be removed)
+
+See each folder's README for setup.
