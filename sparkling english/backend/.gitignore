@@ -1,7 +1,0 @@
-target/
-.idea/
-*.iml
-.vscode/
-.mvn/
-!.mvn/wrapper/maven-wrapper.properties
-.env

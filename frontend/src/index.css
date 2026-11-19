@@ -290,3 +290,5 @@ tr.unread td{background:rgba(122,162,255,.07)}
   .right-auth{gap:.3rem}
 }
 @media (max-width:520px){ .brand-text{display:none} }
+.links a.btn{color:#0b0f23; opacity:1}
+.links a.btn:hover{background:linear-gradient(90deg,var(--primary),var(--accent))}

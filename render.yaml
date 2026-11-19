@@ -1,0 +1,17 @@
+# Render Blueprint: New > Blueprint > pick this repo. Fill the three `sync: false` secrets in the dashboard.
+services:
+  - type: web
+    name: spark-english-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - { key: PORT, value: "8080" }
+      - { key: Database__Provider, value: Postgres }
+      - { key: ConnectionStrings__Default, sync: false }   # e.g. Host=...neon.tech;Database=neondb;Username=...;Password=...;SSL Mode=Require
+      - { key: Jwt__Secret, generateValue: true }
+      - { key: Admin__Email, value: admin@sparkenglishkids.com }
+      - { key: Admin__Password, sync: false }
+      - { key: Cors__Origins, value: "https://spark-english-kids.netlify.app" }

@@ -1,6 +1,6 @@
 # Spark English Kids — Frontend
 
-React 19 + TypeScript + Vite single-page app: bilingual (EN/IT) marketing site with live course data, free-trial booking, contact form, login/register and an admin dashboard. Talks to the [ASP.NET Core API](../backend-dotnet).
+React 19 + TypeScript + Vite single-page app: bilingual (EN/IT) marketing site with live course data, free-trial booking, contact form, login/register and an admin dashboard. Talks to the [ASP.NET Core API](../backend).
 
 **Stack:** React 19 · TypeScript (strict) · Vite · React Router · TanStack Query · React Hook Form + Zod
 
@@ -11,7 +11,7 @@ cp .env.example .env.local      # VITE_API_BASE=http://localhost:5128/api
 npm install
 npm run dev                     # http://localhost:5173
 ```
-Start the API first (`cd ../backend-dotnet/src/SparkEnglish.Api && dotnet run`).
+Start the API first (`cd ../backend/src/SparkEnglish.Api && dotnet run`).
 
 Scripts: `npm run dev | build | preview | typecheck | lint`.
 
