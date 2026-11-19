@@ -7,7 +7,7 @@ A full-stack, bilingual (EN / IT) website for an online English school for child
 | ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) |
 
 **Live frontend:** https://spark-english-kids.netlify.app
-
+ 
 ## Tech
 
 | Layer | Stack |
