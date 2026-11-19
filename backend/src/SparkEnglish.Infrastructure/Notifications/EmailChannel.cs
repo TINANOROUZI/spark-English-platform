@@ -21,7 +21,7 @@ public class EmailChannel(IOptions<NotificationOptions> options) : INotification
         mime.Subject = n.Subject;
         mime.Body = new TextPart("plain") { Text = n.Body };
 
-        using var client = new SmtpClient();
+        using var client = new SmtpClient { CheckCertificateRevocation = _o.Smtp.CheckCertificateRevocation };
         await client.ConnectAsync(_o.Smtp.Host, _o.Smtp.Port, _o.Smtp.Port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls, ct);
         if (!string.IsNullOrWhiteSpace(_o.Smtp.User)) await client.AuthenticateAsync(_o.Smtp.User, _o.Smtp.Password, ct);
         await client.SendAsync(mime, ct);

@@ -14,6 +14,9 @@ public class SmtpOptions
     public int Port { get; set; } = 587;
     public string User { get; set; } = "";
     public string Password { get; set; } = "";
+    /// <summary>Keep true in production. Set false only if your OS can't complete OCSP/CRL lookups (common on macOS dev machines);
+    /// the certificate chain and host name are still validated.</summary>
+    public bool CheckCertificateRevocation { get; set; } = true;
 }
 
 public class TelegramOptions
